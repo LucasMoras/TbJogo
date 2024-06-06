@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function iniciarJogo() {
-        numeroAleatorio = Math.floor(Math.random() * 100) + 1;
+        numeroAleatorio = Math.floor(Math.random() * 1) + 1;
         tentativas = 0;
 
         mensagemBoasVindas.textContent = `Olá ${nomeUsuario}, Tente adivinhar o número entre 1 e 100`;

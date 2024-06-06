@@ -8,29 +8,29 @@
 </head>
 <body>
     <div id="telaBoasVindas" class="tela">
-        <h2>Jogo de Adivinhação</h2>
+        <h1>Jogo de Adivinhação</h1>
         <form id="formBoasVindas">
             <label for="nomeUsuario"><b>Digite seu nome</b></label>
             <input type="text" id="nomeUsuario" name="nomeUsuario" required>
-            <button type="submit">Jogar</button>
+            <button type="submit"><b>Jogar</b></button>
         </form>
     </div>
 
     <div id="telaJogo" class="tela" style="display: none;">
         <h2 id="mensagemBoasVindas"></h2>
         <form id="formAdivinhacao">
-            <label for="adivinhar">Digite um número entre 1 e 100</label>
+            <label for="adivinhar"><b>Digite um número entre 1 e 100</b></label>
             <input type="number" id="adivinhar" name="adivinhar" min="1" max="100" required>
-            <button type="submit">Adivinhar</button>
+            <button type="submit"><b>Adivinhar</b></button>
         </form>
         <p id="mensagemFeedback"></p>
     </div>
 
     <div id="telaResultado" class="tela" style="display: none;">
-        <h2>Parabéns, <span id="nomeFinalUsuario"></span>!</h2>
-        <p>Você adivinhou o número correto: <span id="numeroCorreto"></span></p>
-        <p>Sua pontuação: <span id="pontuacaoFinal"></span> tentativas</p>
-        <button id="botaoJogarNovamente">Jogar Novamente</button>
+        <h2>Parabéns <span id="nomeFinalUsuario"></span>!</h2>
+        <p><b>Você adivinhou o número correto: </b><span id="numeroCorreto"></span></p>
+        <p><b>Sua pontuação: </b><span id="pontuacaoFinal"></span> tentativas</p>
+        <button class="botaoJogarNovamente" id="botaoJogarNovamente"><b>Jogar Novamente</b></button>
     </div>
 
     <script src="main.js"></script>
