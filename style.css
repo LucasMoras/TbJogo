@@ -46,7 +46,7 @@ label {
     margin-bottom: 5px;
     color: #2c2c2c;
 }
-
+input[type="email"],
 input[type="text"],
 input[type="number"] {
     width: 100%;
