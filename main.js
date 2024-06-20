@@ -1,129 +1,168 @@
+// Adiciona um listener para garantir que o script seja executado após o carregamento completo do DOM
 document.addEventListener('DOMContentLoaded', function () {
-const telaBoasVindas = document.getElementById('telaBoasVindas');
-const telaJogo = document.getElementById('telaJogo');
-const telaResultado = document.getElementById('telaResultado');
+    // Referencia os elementos das diferentes telas
+    const telaBoasVindas = document.getElementById('telaBoasVindas');
+    const telaJogo = document.getElementById('telaJogo');
+    const telaResultado = document.getElementById('telaResultado');
 
-const formBoasVindas = document.getElementById('formBoasVindas');
-const formAdivinhacao = document.getElementById('formAdivinhacao');
-const botaoJogarNovamente = document.getElementById('botaoJogarNovamente');
+    // Referencia os formulários e botões
+    const formBoasVindas = document.getElementById('formBoasVindas');
+    const formAdivinhacao = document.getElementById('formAdivinhacao');
+    const botaoJogarNovamente = document.getElementById('botaoJogarNovamente');
 
-const mensagemBoasVindas = document.getElementById('mensagemBoasVindas');
-const mensagemFeedback = document.getElementById('mensagemFeedback');
-const nomeFinalUsuario = document.getElementById('nomeFinalUsuario');
-const numeroCorreto = document.getElementById('numeroCorreto');
-const pontuacaoFinal = document.getElementById('pontuacaoFinal');
-const classificacaoJogadores = document.getElementById('classificacaoJogadores');
+    // Referencia os elementos de mensagem e resultado
+    const mensagemBoasVindas = document.getElementById('mensagemBoasVindas');
+    const mensagemFeedback = document.getElementById('mensagemFeedback');
+    const nomeFinalUsuario = document.getElementById('nomeFinalUsuario');
+    const numeroCorreto = document.getElementById('numeroCorreto');
+    const pontuacaoFinal = document.getElementById('pontuacaoFinal');
+    const classificacaoJogadores = document.getElementById('classificacaoJogadores');
 
-let nomeUsuario = '';
-let numeroAleatorio = 0;
-let tentativas = 0;
+    // Declaração de variáveis globais
+    let nomeUsuario = '';
+    let numeroAleatorio = 0;
+    let tentativas = 0;
 
-const botaoResetarTabela = document.getElementById('botaoResetarTabela');
-botaoResetarTabela.addEventListener('click', function () {
-localStorage.removeItem('jogadores');
-mostrarClassificacao();
-});
+    // Referencia e adiciona evento ao botão de resetar a tabela de classificação
+    const botaoResetarTabela = document.getElementById('botaoResetarTabela');
+    botaoResetarTabela.addEventListener('click', function () {
+        localStorage.removeItem('jogadores'); // Remove jogadores do localStorage
+        mostrarClassificacao(); // Atualiza a classificação exibida
+    });
 
-// Envia as informaçoes para o email
-formBoasVindas.addEventListener('submit', function (event) {
-event.preventDefault();
-nomeUsuario = document.getElementById('nomeUsuario').value.trim();
-const emailUsuario = document.getElementById('emailUsuario').value.trim();
+    // Define o foco automático no input de nome
+    document.getElementById('nomeUsuario').focus();
 
-if (nomeUsuario && emailUsuario) {
-const formData = new FormData(formBoasVindas);
-formData.append('nomeUsuario', nomeUsuario);
-formData.append('emailUsuario', emailUsuario);
-fetch(formBoasVindas.action, {
-method: 'POST',
-body: formData
-})
-.then(response => {
-if (!response.ok) {
- throw new Error('Erro ao enviar dados');
-}
-iniciarJogo();
-})
-.catch(error => {
-console.error('Erro:', error);
-alert('Erro ao enviar dados. Por favor, tente novamente.');
-});
-} else {
-alert('Por favor, preencha seu nome e email.');
-}
-});
+    // Envia as informações ao pressionar Enter no campo nomeUsuario
+    document.getElementById('nomeUsuario').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Previne comportamento padrão de envio
+            formBoasVindas.dispatchEvent(new Event('submit')); // Dispara evento de submissão
+        }
+    });
 
-//
-formAdivinhacao.addEventListener('submit', function (event) {
-event.preventDefault();
-const adivinhar = parseInt(document.getElementById('adivinhar').value, 10);
+    // Envia as informações ao pressionar Enter no campo emailUsuario
+    document.getElementById('emailUsuario').addEventListener('keypress', function (event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Previne comportamento padrão de envio
+            formBoasVindas.dispatchEvent(new Event('submit')); // Dispara evento de submissão
+        }
+    });
 
-if (isNaN(adivinhar) || adivinhar < 1 || adivinhar > 100) {
-mensagemFeedback.textContent = 'Por favor, insira um número válido entre 1 e 100';
-} else {
-tentativas++;
-verificarPalpite(adivinhar);
-}
-});
+    // Envia as informações do formulário de boas-vindas
+    formBoasVindas.addEventListener('submit', function (event) {
+        event.preventDefault(); // Previne comportamento padrão de envio
 
-botaoJogarNovamente.addEventListener('click', function () {
-resetarJogo();
-});
+        // Obtém os valores dos campos de nome e email
+        nomeUsuario = document.getElementById('nomeUsuario').value.trim();
+        const emailUsuario = document.getElementById('emailUsuario').value.trim();
 
-function iniciarJogo() {
-numeroAleatorio = Math.floor(Math.random() * 100) + 1;
-tentativas = 0;
-mensagemBoasVindas.textContent = `Olá ${nomeUsuario}, Tente adivinhar o número entre 1 e 100`;
-mensagemFeedback.textContent = '';
-telaBoasVindas.style.display = 'none';
-telaJogo.style.display = 'block';
-telaResultado.style.display = 'none';
-}
-//verifica o numero 
-function verificarPalpite(adivinhar) {
-if (adivinhar === numeroAleatorio) {
-registrarPontuacao();
-finalizarJogo();
-} else if (adivinhar < numeroAleatorio) {
-mensagemFeedback.textContent = 'O número correto é maior';
-} else {
-mensagemFeedback.textContent = 'O número correto é menor';
-}
-}
+        if (nomeUsuario && emailUsuario) { // Verifica se ambos os campos estão preenchidos
+            const formData = new FormData(formBoasVindas); // Cria objeto FormData com os dados do formulário
+            formData.append('nomeUsuario', nomeUsuario); // Adiciona nomeUsuario ao FormData
+            formData.append('emailUsuario', emailUsuario); // Adiciona emailUsuario ao FormData
 
-function registrarPontuacao() {
-const jogadores = JSON.parse(localStorage.getItem('jogadores')) || [];
-jogadores.push({ nome: nomeUsuario, tentativas });
-jogadores.sort((a, b) => a.tentativas - b.tentativas);
-localStorage.setItem('jogadores', JSON.stringify(jogadores));
-}
+            // Envia os dados para o servidor
+            fetch(formBoasVindas.action, {
+                method: 'POST', // Define o método HTTP como POST
+                body: formData // Define o corpo da requisição como FormData
+            })
+                .then(response => {
+                    if (!response.ok) { // Verifica se a resposta não é ok
+                        throw new Error('Erro ao enviar dados'); // Lança um erro
+                    }
+                    iniciarJogo(); // Inicia o jogo
+                })
+                .catch(error => {
+                    console.error('Erro:', error); // Loga o erro no console
+                    alert('Erro ao enviar dados. Por favor, tente novamente.'); // Alerta o usuário sobre o erro
+                });
+        } else {
+            alert('Por favor, preencha seu nome e email.'); // Alerta o usuário para preencher os campos
+        }
+    });
 
-// função para tela de classificação
-function mostrarClassificacao() {
-const jogadores = JSON.parse(localStorage.getItem('jogadores')) || [];
-const topJogadores = jogadores.slice(0, 3);
-classificacaoJogadores.innerHTML = topJogadores.map(jogador => `
-<p>${jogador.nome}: ${jogador.tentativas} tentativas</p>
-`).join('');
-}
+    // Processa a tentativa de adivinhar o número
+    formAdivinhacao.addEventListener('submit', function (event) {
+        event.preventDefault(); // Previne comportamento padrão de envio
 
-// finalizar o jogo
-function finalizarJogo() {
- nomeFinalUsuario.textContent = nomeUsuario;
-numeroCorreto.textContent = numeroAleatorio;
-pontuacaoFinal.textContent = tentativas;
+        // Obtém o valor do input e converte para inteiro
+        const adivinhar = parseInt(document.getElementById('adivinhar').value, 10);
 
-mostrarClassificacao();
-telaJogo.style.display = 'none';
-telaResultado.style.display = 'block';
-}
+        // Verifica se o valor é válido
+        if (isNaN(adivinhar) || adivinhar < 1 || adivinhar > 100) {
+            mensagemFeedback.textContent = 'Por favor, insira um número válido entre 1 e 100'; // Feedback de erro
+        } else {
+            tentativas++; // Incrementa o número de tentativas
+            verificarPalpite(adivinhar); // Verifica o palpite do usuário
+            document.getElementById('adivinhar').value = ''; // Limpa o input após a tentativa
+        }
+    });
 
-// resetar jogo
-function resetarJogo() {
-formBoasVindas.reset();
-formAdivinhacao.reset();
-telaBoasVindas.style.display = 'block';
-telaJogo.style.display = 'none';
-telaResultado.style.display = 'none';
-}
+    // Reinicia o jogo ao clicar no botão "Jogar Novamente"
+    botaoJogarNovamente.addEventListener('click', function () {
+        resetarJogo(); // Chama função para resetar o jogo
+    });
+
+    // Função para iniciar o jogo
+    function iniciarJogo() {
+        numeroAleatorio = Math.floor(Math.random() * 100) + 1; // Gera um número aleatório entre 1 e 100
+        tentativas = 0; // Reseta o contador de tentativas
+        mensagemBoasVindas.textContent = `Olá ${nomeUsuario}, Tente adivinhar o número entre 1 e 100`; // Atualiza a mensagem de boas-vindas
+        mensagemFeedback.textContent = ''; // Limpa a mensagem de feedback
+        telaBoasVindas.style.display = 'none'; // Esconde a tela de boas-vindas
+        telaJogo.style.display = 'block'; // Mostra a tela de jogo
+        telaResultado.style.display = 'none'; // Esconde a tela de resultado
+    }
+
+    // Função para verificar o palpite do usuário
+    function verificarPalpite(adivinhar) {
+        const diferenca = Math.abs(adivinhar - numeroAleatorio); // Calcula a diferença entre o palpite e o número correto
+
+        if (adivinhar === numeroAleatorio) { // Verifica se o palpite está correto
+            registrarPontuacao(); // Registra a pontuação do usuário
+            finalizarJogo(); // Finaliza o jogo
+        } else {
+            mensagemFeedback.textContent = adivinhar < numeroAleatorio ? 'O número correto é maior' : 'O número correto é menor'; // Fornece feedback ao usuário
+            mensagemFeedback.style.color = diferenca <= 10 ? 'red' : 'blue'; // Altera a cor do feedback baseado na proximidade do palpite
+        }
+    }
+
+    // Função para registrar a pontuação do usuário
+    function registrarPontuacao() {
+        const jogadores = JSON.parse(localStorage.getItem('jogadores')) || []; // Obtém jogadores do localStorage ou inicializa um array vazio
+        jogadores.push({ nome: nomeUsuario, tentativas }); // Adiciona o novo jogador ao array
+        jogadores.sort((a, b) => a.tentativas - b.tentativas); // Ordena os jogadores pelo número de tentativas
+        localStorage.setItem('jogadores', JSON.stringify(jogadores)); // Salva a lista de jogadores no localStorage
+    }
+
+    // Função para mostrar a classificação dos jogadores
+    function mostrarClassificacao() {
+        const jogadores = JSON.parse(localStorage.getItem('jogadores')) || []; // Obtém jogadores do localStorage ou inicializa um array vazio
+        const topJogadores = jogadores.slice(0, 3); // Seleciona os top 3 jogadores
+        classificacaoJogadores.innerHTML = topJogadores.map(jogador => `
+            <p>${jogador.nome}: ${jogador.tentativas} tentativas</p>
+        `).join(''); // Gera o HTML para exibir a classificação
+    }
+
+    // Função para finalizar o jogo
+    function finalizarJogo() {
+        nomeFinalUsuario.textContent = nomeUsuario; // Exibe o nome do usuário
+        numeroCorreto.textContent = numeroAleatorio; // Exibe o número correto
+        pontuacaoFinal.textContent = tentativas; // Exibe o número de tentativas
+
+        mostrarClassificacao(); // Mostra a classificação dos jogadores
+        telaJogo.style.display = 'none'; // Esconde a tela de jogo
+        telaResultado.style.display = 'block'; // Mostra a tela de resultado
+    }
+
+    // Função para resetar o jogo
+    function resetarJogo() {
+        formBoasVindas.reset(); // Reseta o formulário de boas-vindas
+        formAdivinhacao.reset(); // Reseta o formulário de adivinhação
+        document.getElementById('nomeUsuario').focus(); // Define o foco no input de nome
+        telaBoasVindas.style.display = 'block'; // Mostra a tela de boas-vindas
+        telaJogo.style.display = 'none'; // Esconde a tela de jogo
+        telaResultado.style.display = 'none'; // Esconde a tela de resultado
+    }
 });
